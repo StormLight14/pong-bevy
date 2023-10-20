@@ -10,9 +10,7 @@ impl Plugin for GameUIPlugin {
 }
 
 #[derive(Component)]
-struct ScoreText {
-    player: u8,
-}
+struct ScoreText;
 
 fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>, score: Res<Score>) {
     commands
@@ -31,8 +29,8 @@ fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>, score: Res<S
             Name::new("UI Root"),
         ))
         .with_children(|commands| {
-            commands.spawn(
-                (TextBundle {
+            commands.spawn((
+                TextBundle {
                     text: Text::from_section(
                         format!("{} | {}", score.0, score.1),
                         TextStyle {
@@ -42,7 +40,8 @@ fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>, score: Res<S
                         },
                     ),
                     ..default()
-                }),
-            );
+                },
+                ScoreText,
+            ));
         });
 }
