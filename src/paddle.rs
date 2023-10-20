@@ -1,11 +1,12 @@
+use crate::VIEW_HEIGHT;
 use bevy::prelude::*;
 
-const PADDLE_SPEED: f32 = 400.0;
+const PADDLE_SPEED: f32 = 100.0;
 const PADDLE_DISTANCE_FROM_MIDDLE: f32 = 120.0;
-const HALF_PADDLE_WIDTH: f32 = 3.0 / 2.0;
-const HALF_PADDLE_HEIGHT: f32 = 12.0 / 2.0;
 
-const BORDER_HEIGHT_FROM_MIDDLE: f32 = 65.0;
+pub const HALF_PADDLE_WIDTH: f32 = 3.0 / 2.0;
+pub const HALF_PADDLE_HEIGHT: f32 = 12.0 / 2.0;
+pub const BORDER_HEIGHT_FROM_MIDDLE: f32 = VIEW_HEIGHT / 2.0;
 
 pub struct PaddlePlugin;
 
@@ -38,6 +39,7 @@ fn spawn_paddles(mut commands: Commands, asset_server: Res<AssetServer>) {
             speed: PADDLE_SPEED,
             player: 1,
         },
+        Name::from("Paddle 1"),
     ));
 
     commands.spawn((
@@ -53,6 +55,7 @@ fn spawn_paddles(mut commands: Commands, asset_server: Res<AssetServer>) {
             speed: PADDLE_SPEED,
             player: 2,
         },
+        Name::from("Paddle 2"),
     ));
 }
 
@@ -73,6 +76,7 @@ fn paddle_movement(
         }
 
         if paddle.player == 2 {
+            info!("Paddle 2 y position: {:?}", paddle_transform.translation.y);
             if input.pressed(KeyCode::O) {
                 paddle_transform.translation.y += paddle.speed * time.delta_seconds();
             }

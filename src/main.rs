@@ -10,6 +10,9 @@ mod paddle;
 use ball::BallPlugin;
 use paddle::PaddlePlugin;
 
+pub const VIEW_WIDTH: f32 = 256.0;
+pub const VIEW_HEIGHT: f32 = 144.0;
+
 fn main() {
     App::new()
         .add_plugins(
@@ -39,8 +42,8 @@ fn spawn_camera(mut commands: Commands) {
     camera.camera_2d.clear_color = ClearColorConfig::Custom(Color::BLACK);
 
     camera.projection.scaling_mode = ScalingMode::AutoMin {
-        min_width: 256.0,
-        min_height: 144.0,
+        min_width: VIEW_WIDTH,
+        min_height: VIEW_HEIGHT,
     };
 
     commands.spawn(camera);
