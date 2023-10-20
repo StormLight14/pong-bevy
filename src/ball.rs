@@ -10,9 +10,9 @@ pub struct BallPlugin;
 
 impl Plugin for BallPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, spawn_ball)
+        app.add_systems(Startup, spawn_ball)
             .add_systems(Update, move_balls)
-            .add_systems(Update, remove_balls);
+            .add_systems(Update, reset);
     }
 }
 
@@ -21,21 +21,19 @@ struct Ball {
     velocity: Vec3,
 }
 
-fn spawn_ball(mut commands: Commands, asset_server: Res<AssetServer>, input: Res<Input<KeyCode>>) {
+fn spawn_ball(mut commands: Commands, asset_server: Res<AssetServer>) {
     let ball_texture = asset_server.load("ball.png");
 
-    if input.just_pressed(KeyCode::Space) {
-        commands.spawn((
-            SpriteBundle {
-                texture: ball_texture,
-                ..default()
-            },
-            Ball {
-                velocity: Vec3::new(BALL_SPEED, BALL_SPEED, 0.0),
-            },
-            Name::from("Ball"),
-        ));
-    }
+    commands.spawn((
+        SpriteBundle {
+            texture: ball_texture,
+            ..default()
+        },
+        Ball {
+            velocity: Vec3::new(BALL_SPEED, BALL_SPEED, 0.0),
+        },
+        Name::from("Ball"),
+    ));
 }
 
 fn move_balls(
@@ -44,7 +42,6 @@ fn move_balls(
     paddle_query: Query<(&Transform, &Paddle), Without<Ball>>, // USE
 ) {
     for (mut ball_transform, mut ball) in ball_query.iter_mut() {
-        info!("Ball y positon: {:?}", ball_transform.translation.y);
         ball_transform.translation += ball.velocity * time.delta_seconds();
 
         if ball_transform.translation.y - HALF_BALL_HEIGHT < -BORDER_HEIGHT_FROM_MIDDLE {
@@ -89,12 +86,28 @@ fn move_balls(
     }
 }
 
-fn remove_balls(mut commands: Commands, query: Query<(Entity, &Transform), With<Ball>>) {
+fn reset(
+    mut commands: Commands,
+    query: Query<(Entity, &Transform), With<Ball>>,
+    asset_server: Res<AssetServer>,
+) {
     for (ball_entity, ball_transform) in query.iter() {
         if ball_transform.translation.x < -VIEW_WIDTH / 2.0
             || ball_transform.translation.x > VIEW_WIDTH / 2.0
         {
             commands.entity(ball_entity).despawn();
+            let ball_texture = asset_server.load("ball.png");
+
+            commands.spawn((
+                SpriteBundle {
+                    texture: ball_texture,
+                    ..default()
+                },
+                Ball {
+                    velocity: Vec3::new(BALL_SPEED, BALL_SPEED, 0.0),
+                },
+                Name::from("Ball"),
+            ));
         }
     }
 }

@@ -6,12 +6,18 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 mod ball;
 mod paddle;
+mod ui;
 
 use ball::BallPlugin;
 use paddle::PaddlePlugin;
+use ui::GameUIPlugin;
 
 pub const VIEW_WIDTH: f32 = 256.0;
 pub const VIEW_HEIGHT: f32 = 144.0;
+
+#[derive(Resource, Default, Reflect)]
+#[reflect(Resource)]
+pub struct Score(u16, u16);
 
 fn main() {
     App::new()
@@ -29,10 +35,12 @@ fn main() {
                 })
                 .build(),
         )
+        .insert_resource(Score(0, 0))
+        .register_type::<Score>()
         .add_plugins(
             WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::Escape)),
         )
-        .add_plugins((PaddlePlugin, BallPlugin))
+        .add_plugins((PaddlePlugin, BallPlugin, GameUIPlugin))
         .add_systems(Startup, spawn_camera)
         .run();
 }

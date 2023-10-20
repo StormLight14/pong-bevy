@@ -76,11 +76,11 @@ fn paddle_movement(
         }
 
         if paddle.player == 2 {
-            info!("Paddle 2 y position: {:?}", paddle_transform.translation.y);
-            if input.pressed(KeyCode::O) {
+            //info!("Paddle 2 y position: {:?}", paddle_transform.translation.y);
+            if input.pressed(KeyCode::O) || input.pressed(KeyCode::I) {
                 paddle_transform.translation.y += paddle.speed * time.delta_seconds();
             }
-            if input.pressed(KeyCode::L) {
+            if input.pressed(KeyCode::L) || input.pressed(KeyCode::K) {
                 paddle_transform.translation.y -= paddle.speed * time.delta_seconds();
             }
         }
