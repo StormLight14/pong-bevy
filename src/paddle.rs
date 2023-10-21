@@ -1,3 +1,4 @@
+use crate::Player;
 use crate::VIEW_HEIGHT;
 use bevy::prelude::*;
 
@@ -17,10 +18,10 @@ impl Plugin for PaddlePlugin {
     }
 }
 
-#[derive(Component, Default)]
+#[derive(Component)]
 pub struct Paddle {
     speed: f32,
-    pub player: u8,
+    pub player: Player,
 }
 
 fn spawn_paddles(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -37,7 +38,7 @@ fn spawn_paddles(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Paddle {
             speed: PADDLE_SPEED,
-            player: 1,
+            player: Player::One,
         },
         Name::from("Paddle 1"),
     ));
@@ -53,7 +54,7 @@ fn spawn_paddles(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Paddle {
             speed: PADDLE_SPEED,
-            player: 2,
+            player: Player::Two,
         },
         Name::from("Paddle 2"),
     ));
@@ -65,7 +66,7 @@ fn paddle_movement(
     time: ResMut<Time>,
 ) {
     for (mut paddle_transform, paddle) in paddle_query.iter_mut() {
-        if paddle.player == 1 {
+        if paddle.player == Player::One {
             //info!("Paddle 1 y position: {:?}", paddle_transform.translation.y);
             if input.pressed(KeyCode::W) {
                 paddle_transform.translation.y += paddle.speed * time.delta_seconds();
@@ -75,12 +76,16 @@ fn paddle_movement(
             }
         }
 
-        if paddle.player == 2 {
+        if paddle.player == Player::Two {
             //info!("Paddle 2 y position: {:?}", paddle_transform.translation.y);
-            if input.pressed(KeyCode::O) || input.pressed(KeyCode::I) {
+            if input.pressed(KeyCode::O) || input.pressed(KeyCode::I) || input.pressed(KeyCode::Up)
+            {
                 paddle_transform.translation.y += paddle.speed * time.delta_seconds();
             }
-            if input.pressed(KeyCode::L) || input.pressed(KeyCode::K) {
+            if input.pressed(KeyCode::L)
+                || input.pressed(KeyCode::K)
+                || input.pressed(KeyCode::Down)
+            {
                 paddle_transform.translation.y -= paddle.speed * time.delta_seconds();
             }
         }

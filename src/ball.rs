@@ -1,6 +1,7 @@
 use crate::paddle::{Paddle, BORDER_HEIGHT_FROM_MIDDLE, HALF_PADDLE_HEIGHT, HALF_PADDLE_WIDTH};
-use crate::{VIEW_HEIGHT, VIEW_WIDTH};
+use crate::{Player, Score, VIEW_HEIGHT, VIEW_WIDTH};
 use bevy::prelude::*;
+use rand::seq::SliceRandom;
 
 const BALL_SPEED: f32 = 50.0;
 const HALF_BALL_WIDTH: f32 = 3.0 / 2.0;
@@ -24,13 +25,22 @@ struct Ball {
 fn spawn_ball(mut commands: Commands, asset_server: Res<AssetServer>) {
     let ball_texture = asset_server.load("ball.png");
 
+    let possible_nums = vec![-1.0, 1.0];
+
+    let (rand_one, rand_two) = (
+        possible_nums.choose(&mut rand::thread_rng()).unwrap(),
+        possible_nums.choose(&mut rand::thread_rng()).unwrap(),
+    );
+
+    info!("{:?}", rand_one);
+
     commands.spawn((
         SpriteBundle {
             texture: ball_texture,
             ..default()
         },
         Ball {
-            velocity: Vec3::new(BALL_SPEED, BALL_SPEED, 0.0),
+            velocity: Vec3::new(rand_one * BALL_SPEED, rand_two * BALL_SPEED, 0.0),
         },
         Name::from("Ball"),
     ));
@@ -66,7 +76,7 @@ fn move_balls(
                     && ball_transform.translation.y - HALF_BALL_HEIGHT
                         <= paddle_transform.translation.y + HALF_PADDLE_HEIGHT)
             {
-                if paddle.player == 1 {
+                if paddle.player == Player::One {
                     if ball_transform.translation.x - HALF_BALL_WIDTH
                         <= paddle_transform.translation.x + HALF_PADDLE_WIDTH
                     {
@@ -74,7 +84,7 @@ fn move_balls(
                     }
                 }
 
-                if paddle.player == 2 {
+                if paddle.player == Player::Two {
                     if ball_transform.translation.x + HALF_BALL_WIDTH
                         >= paddle_transform.translation.x - HALF_PADDLE_WIDTH
                     {
@@ -90,13 +100,22 @@ fn reset(
     mut commands: Commands,
     query: Query<(Entity, &Transform), With<Ball>>,
     asset_server: Res<AssetServer>,
+    mut score: ResMut<Score>,
 ) {
     for (ball_entity, ball_transform) in query.iter() {
         if ball_transform.translation.x < -VIEW_WIDTH / 2.0
             || ball_transform.translation.x > VIEW_WIDTH / 2.0
         {
-            commands.entity(ball_entity).despawn();
+            let possible_nums = vec![-1.0, 1.0];
+
+            let (rand_one, rand_two) = (
+                possible_nums.choose(&mut rand::thread_rng()).unwrap(),
+                possible_nums.choose(&mut rand::thread_rng()).unwrap(),
+            );
+
             let ball_texture = asset_server.load("ball.png");
+
+            commands.entity(ball_entity).despawn();
 
             commands.spawn((
                 SpriteBundle {
@@ -104,10 +123,17 @@ fn reset(
                     ..default()
                 },
                 Ball {
-                    velocity: Vec3::new(BALL_SPEED, BALL_SPEED, 0.0),
+                    velocity: Vec3::new(rand_one * BALL_SPEED, rand_two * BALL_SPEED, 0.0),
                 },
                 Name::from("Ball"),
             ));
+
+            if ball_transform.translation.x > VIEW_WIDTH / 2.0 {
+                score.0 += 1;
+            }
+            if ball_transform.translation.x < -VIEW_WIDTH / 2.0 {
+                score.1 += 1;
+            }
         }
     }
 }

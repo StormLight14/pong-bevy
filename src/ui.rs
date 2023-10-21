@@ -5,7 +5,8 @@ pub struct GameUIPlugin;
 
 impl Plugin for GameUIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_ui);
+        app.add_systems(Startup, spawn_ui)
+            .add_systems(Update, update_score_ui);
     }
 }
 
@@ -21,7 +22,7 @@ fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>, score: Res<S
                     height: Val::Percent(10.0),
                     align_items: AlignItems::Center,
                     padding: UiRect::all(Val::Px(10.0)),
-                    margin: UiRect::left(Val::Percent(50.0)),
+                    margin: UiRect::left(Val::Percent(48.0)),
                     ..default()
                 },
                 ..default()
@@ -44,4 +45,10 @@ fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>, score: Res<S
                 ScoreText,
             ));
         });
+}
+
+fn update_score_ui(mut score_texts: Query<&mut Text, With<ScoreText>>, score: Res<Score>) {
+    for mut score_text in score_texts.iter_mut() {
+        score_text.sections[0].value = format!("{} | {}", score.0, score.1);
+    }
 }

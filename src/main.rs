@@ -19,6 +19,12 @@ pub const VIEW_HEIGHT: f32 = 144.0;
 #[reflect(Resource)]
 pub struct Score(u16, u16);
 
+#[derive(PartialEq)]
+pub enum Player {
+    One,
+    Two,
+}
+
 fn main() {
     App::new()
         .add_plugins(
