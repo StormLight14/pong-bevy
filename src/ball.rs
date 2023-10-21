@@ -67,6 +67,7 @@ fn move_balls(
         for (paddle_transform, paddle) in paddle_query.iter() {
             // ball y position == middle y of ball
             // paddle y position == middle y of paddle
+
             if (ball_transform.translation.y + HALF_BALL_HEIGHT
                 >= paddle_transform.translation.y - HALF_PADDLE_HEIGHT
                 && ball_transform.translation.y + HALF_BALL_HEIGHT
@@ -79,8 +80,11 @@ fn move_balls(
                 if paddle.player == Player::One {
                     if ball_transform.translation.x - HALF_BALL_WIDTH
                         <= paddle_transform.translation.x + HALF_PADDLE_WIDTH
+                        && ball_transform.translation.x - HALF_BALL_WIDTH
+                            >= paddle_transform.translation.x - HALF_PADDLE_WIDTH
                     {
                         ball.velocity.x *= -1.0;
+                        ball_transform.translation.x += 1.0;
                     }
                 }
 
@@ -89,6 +93,7 @@ fn move_balls(
                         >= paddle_transform.translation.x - HALF_PADDLE_WIDTH
                     {
                         ball.velocity.x *= -1.0;
+                        ball_transform.translation.x -= 1.0;
                     }
                 }
             }
