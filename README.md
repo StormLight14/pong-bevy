@@ -1,3 +1,2 @@
-W and S to control left paddle thing
-
-Up and Down arrows for right paddle thingy, or O and K work too
+W and S to controls the left paddle.
+Up and Down arrows for right paddle, or O and K work as well.
